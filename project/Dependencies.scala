@@ -1,4 +1,3 @@
-
 import org.portablescala.sbtplatformdeps.PlatformDepsPlugin
 import org.portablescala.sbtplatformdeps.PlatformDepsPlugin.autoImport.toPlatformDepsGroupID
 import sbt._
@@ -11,9 +10,10 @@ object Dependencies extends AutoPlugin {
   object autoImport {
     type Deps = Def.Setting[Seq[ModuleID]]
 
-    val java8compat: Deps            = libraryDependencies += "org.scala-lang.modules" %% "scala-java8-compat"      % "1.0.2"
-    val scalaXml: Deps               = libraryDependencies += "org.scala-lang.modules" %% "scala-xml"               % "2.4.0"
-    val scalaCollectionsCompat: Deps = libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % "2.13.0"
+    val java8compat: Deps            = libraryDependencies += "org.scala-lang.modules" %% "scala-java8-compat" % "1.0.2"
+    val scalaXml: Deps               = libraryDependencies += "org.scala-lang.modules" %% "scala-xml"          % "2.4.0"
+    val scalaCollectionsCompat: Deps =
+      libraryDependencies += "org.scala-lang.modules" %% "scala-collection-compat" % "2.13.0"
 
     val catsVersion: String = "2.13.0"
     val cats: Deps          = libraryDependencies += "org.typelevel" %%% "cats-core"      % catsVersion
@@ -47,7 +47,7 @@ object Dependencies extends AutoPlugin {
     val fs2DataCirce: Deps = libraryDependencies += "org.gnieh" %%% "fs2-data-json-circe" % "1.11.2"
 
     val pureconfigVersion = "0.17.9"
-    val pureconfig: Deps = libraryDependencies ++= Seq(
+    val pureconfig: Deps  = libraryDependencies ++= Seq(
       "com.github.pureconfig" %%% "pureconfig-core"           % pureconfigVersion,
       "com.github.pureconfig" %%% "pureconfig-cats"           % pureconfigVersion,
       "com.github.pureconfig" %%% "pureconfig-generic-scala3" % pureconfigVersion
@@ -57,7 +57,7 @@ object Dependencies extends AutoPlugin {
       libraryDependencies += "com.github.pureconfig" %%% "pureconfig-enumeratum" % pureconfigVersion
     val pureconfigCatsEffect: Deps =
       libraryDependencies += "com.github.pureconfig" %%% "pureconfig-cats-effect" % pureconfigVersion
-    val pureconfigFs2: Deps = libraryDependencies += "com.github.pureconfig" %%% "pureconfig-fs2" % pureconfigVersion
+    val pureconfigFs2: Deps  = libraryDependencies += "com.github.pureconfig" %%% "pureconfig-fs2" % pureconfigVersion
     val pureconfigIp4s: Deps =
       libraryDependencies += "com.github.pureconfig" %%% "pureconfig-ip4s" % pureconfigVersion
     val pureconfigHttp4s: Deps =
@@ -72,14 +72,14 @@ object Dependencies extends AutoPlugin {
     val http4sEmberServer: Deps = libraryDependencies += "org.http4s" %%% "http4s-ember-server" % http4sVersion
     val http4sEmberClient: Deps = libraryDependencies += "org.http4s" %%% "http4s-ember-client" % http4sVersion
 
-    val monocleVersion       = "3.3.0"
-    val monocle: Deps        = libraryDependencies ++= Seq(
-      "dev.optics" %%% "monocle-core" % monocleVersion,
+    val monocleVersion = "3.3.0"
+    val monocle: Deps  = libraryDependencies ++= Seq(
+      "dev.optics" %%% "monocle-core"  % monocleVersion,
       "dev.optics" %%% "monocle-macro" % monocleVersion
     )
-    val monocleState: Deps   = libraryDependencies += "dev.optics" %%% "monocle-state" % monocleVersion
+    val monocleState: Deps   = libraryDependencies += "dev.optics" %%% "monocle-state"   % monocleVersion
     val monocleGeneric: Deps = libraryDependencies += "dev.optics" %%% "monocle-generic" % monocleVersion
-    val monocleUnsafe: Deps  = libraryDependencies += "dev.optics" %%% "monocle-unsafe" % monocleVersion
+    val monocleUnsafe: Deps  = libraryDependencies += "dev.optics" %%% "monocle-unsafe"  % monocleVersion
 
     val scalatags: Deps       = libraryDependencies += "com.lihaoyi" %%% "scalatags"        % "0.13.1"
     val http4sScalatags: Deps = libraryDependencies += "org.http4s"  %%% "http4s-scalatags" % "0.25.2"
@@ -96,13 +96,13 @@ object Dependencies extends AutoPlugin {
     val http4sDom: Deps = libraryDependencies += "org.http4s"      %%% "http4s-dom" % "0.2.8"
 
     val declineVersion = "2.5.0"
-    val decline: Deps = libraryDependencies ++= Seq( 
+    val decline: Deps  = libraryDependencies ++= Seq(
       "com.monovore" %% "decline"        % declineVersion,
       "com.monovore" %% "decline-effect" % declineVersion
     )
 
     val doobieVersion = "1.0.0-RC10"
-    val doobie: Deps = libraryDependencies ++= Seq(
+    val doobie: Deps  = libraryDependencies ++= Seq(
       "org.tpolecat" %% "doobie-core" % doobieVersion,
       "org.tpolecat" %% "doobie-free" % doobieVersion
     )
@@ -151,12 +151,12 @@ object Dependencies extends AutoPlugin {
       testFrameworks += new TestFramework( "utest.runner.Framework" )
 
     val autoDiffVersion = "0.6.0"
-    val autoDiff: Deps = libraryDependencies ++= Seq(
-      "fr.thomasdufour" %% "auto-diff-core" % autoDiffVersion,
+    val autoDiff: Deps  = libraryDependencies ++= Seq(
+      "fr.thomasdufour" %% "auto-diff-core"    % autoDiffVersion,
       "fr.thomasdufour" %% "auto-diff-generic" % autoDiffVersion
     )
 
     val autoDiffEnumeratum: Deps = libraryDependencies += "fr.thomasdufour" %% "auto-diff-enumeratum" % autoDiffVersion
-    val autoDiffScalatest: Deps  = libraryDependencies += "fr.thomasdufour" %% "auto-diff-scalatest" % autoDiffVersion
+    val autoDiffScalatest: Deps  = libraryDependencies += "fr.thomasdufour" %% "auto-diff-scalatest"  % autoDiffVersion
   }
 }

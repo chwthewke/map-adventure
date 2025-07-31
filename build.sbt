@@ -14,7 +14,7 @@ enablePlugins( Dependencies )
 
 val sharedSettings = Seq(
   scalaVersion                                          := "3.7.1",
-  ideExcludedDirectories.withRank( KeyRanks.Invisible ) := Seq( target.value ),
+  ideExcludedDirectories.withRank( KeyRanks.Invisible ) := Seq( target.value )
 )
 
 val aggregateSettings = Seq(
@@ -39,6 +39,14 @@ val `map-adventure-core`: Project =
     .settings( sharedSettings )
     .settings( aggregateSettings )
     .aggregate( `map-adventure-core-js`, `map-adventure-core-jvm` )
+
+val `map-adventure-tools`: Project =
+  project
+    .in( file( "tools" ) )
+    .settings( sharedSettings )
+    .enablePlugins( Scalac )
+    .settings( http4sEmberClient, http4sCirce, logging, circeParser )
+    .dependsOn( `map-adventure-core-jvm` )
 
 val `map-adventure-assets-cross`: CrossProject =
   crossProject( JSPlatform, JVMPlatform )
@@ -88,7 +96,7 @@ val backendRunnerSettings: Seq[Def.Setting[_]] = Seq(
 // NOTE this module is intended for running the backend from sbt or IntelliJ
 //  it could have specific application.conf/logback.xml/assets etc.,
 //  matching the requirements for map-adventure-frontend-run
-val `map-adventure-server-run`: Project = 
+val `map-adventure-server-run`: Project =
   project
     .in( file( "server-run" ) )
     .enablePlugins( Scalac )
@@ -96,7 +104,7 @@ val `map-adventure-server-run`: Project =
     .settings( backendRunnerSettings )
     .dependsOn( `map-adventure-server` )
 
-val `map-adventure-frontend`: Project = 
+val `map-adventure-frontend`: Project =
   project
     .in( file( "frontend" ) )
     .enablePlugins( Scalac )
@@ -148,6 +156,8 @@ val `map-adventure` = project
   .settings( sharedSettings, aggregateSettings )
   .aggregate(
     `map-adventure-core`,
+    `map-adventure-tools`,
+    `map-adventure-assets`,
     `map-adventure-server`,
     `map-adventure-server-run`,
     `map-adventure-frontend`,
