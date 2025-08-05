@@ -11,24 +11,23 @@ import tyrian.Sub
 import tyrian.TyrianApp
 import tyrian.TyrianIOApp
 
-type Msg   = String
 type Model = String
 
-abstract class Main[F[_]: Async] extends TyrianApp[F, Msg, Model]:
-  override def router: Location => Msg = _ => ""
+abstract class Main[F[_]: Async] extends TyrianApp[F, Msg, AppModel[F]]:
+  override def router: Location => Msg = _ => Msg.Noop
 
-  override def init( flags: Map[String, String] ): ( Model, Cmd[F, Msg] ) =
-    ( flags.getOrElse( "backend", "missing backend flag" ), Cmd.None )
+  override def init( flags: Map[String, String] ): ( AppModel[F], Cmd[F, Msg] ) =
+    AppModel.init( flags )
 
-  override def update( model: Model ): Msg => ( Model, Cmd[F, Msg] ) = _ => ( model, Cmd.None )
+  override def update( model: AppModel[F] ): Msg => ( AppModel[F], Cmd[F, Msg] ) =
+    msg => model.update( msg )
 
-  override def view( model: Model ): Html[Msg] = Html.div(
-    Html.h1( Library.function.toString ),
+  override def view( model: AppModel[F] ): Html[Msg] = Html.div(
     Html.div( s"Tyrian app ${MapAdventure.name} version ${MapAdventure.version} started" ),
-    Html.div( s"backend url: $model" )
+    MainView.apply( model )
   )
 
-  override def subscriptions( model: Model ): Sub[F, Msg] = Sub.None
+  override def subscriptions( model: AppModel[F] ): Sub[F, Msg] = Sub.None
 
 @JSExportTopLevel( "TyrianApp" )
-object Main extends Main[IO] with TyrianIOApp[Msg, Model]
+object Main extends Main[IO] with TyrianIOApp[Msg, AppModel[IO]]

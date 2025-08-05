@@ -11,11 +11,13 @@ import org.http4s.dsl.Http4sDsl
 import org.http4s.headers.`Content-Type`
 import org.http4s.scalatags.*
 
+import server.middleware.Cors
 import server.pages.Index
 
 class Routes[F[_]: Sync](
     private val serverConfig: ServerConfig,
-    private val shutdown: F[Unit]
+    private val shutdown: F[Unit],
+    private val corsMiddleware: Cors.T[F]
 ) extends Http4sDsl[F]:
 
   private val systemRoutes: HttpRoutes[F] = HttpRoutes.of:
@@ -38,14 +40,16 @@ class Routes[F[_]: Sync](
       )
 
   val routes: HttpRoutes[F] =
-    systemRoutes <+> pageRoutes <+> staticRoutes
+    systemRoutes <+> pageRoutes <+> corsMiddleware( staticRoutes )
 
 object Routes:
   def apply[F[_]: Sync](
       serverConfig: ServerConfig,
-      shutdown: F[Unit]
+      shutdown: F[Unit],
+      corsMiddleware: Cors.T[F]
   ): HttpRoutes[F] =
     new Routes(
       serverConfig,
-      shutdown
+      shutdown,
+      corsMiddleware
     ).routes

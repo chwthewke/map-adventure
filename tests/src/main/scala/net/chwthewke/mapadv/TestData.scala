@@ -50,6 +50,7 @@ object TestData:
       adjacencies <- ( 0 until index.parts ).toVector.foldLeftM( Map.empty[InseeCode, NonEmptyVector[InseeCode]] )(
                        ( acc, i ) => loadAdjacencies( i ).map( acc ++ _ )
                      )
+      
       componentsV <- ( 0 until index.components ).toVector.foldMapM( i => loadComponent( i ).map( Vector( _ ) ) )
       components  <- componentsV.toNev.liftTo[F]( new NoSuchElementException( "zero components" ) )
     yield MapData( townships, components, adjacencies )

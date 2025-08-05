@@ -11,6 +11,8 @@ import pureconfig.ConfigSource
 import pureconfig.module.catseffect.syntax.*
 import scala.concurrent.duration.*
 
+import server.middleware.Cors
+
 object AppServer:
   def resource[F[_]: Async]: Resource[F, Unit] =
     given Network[F] = Network.forAsync[F]
@@ -22,7 +24,7 @@ object AppServer:
              .default[F]
              .withHost( config.server.listenAddress )
              .withPort( config.server.listenPort )
-             .withHttpApp( Routes( config.server, shutdown.complete( () ).void ).orNotFound )
+             .withHttpApp( Routes( config.server, shutdown.complete( () ).void, Cors[F] ).orNotFound )
              .withShutdownTimeout( 1.second )
              .build
       server <- Resource.make( shutdown.get )( _ => Async[F].unit )
