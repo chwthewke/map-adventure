@@ -10,6 +10,7 @@ import tyrian.Cmd
 import tyrian.Html
 
 import net.chwthewke.mapadv.spa.css.Bulma
+import net.chwthewke.mapadv.spa.css.Classes
 import net.chwthewke.mapadv.spa.games.DistanceGame.Model.Question
 
 object DistanceGame:
@@ -80,14 +81,21 @@ object DistanceGame:
         )
       case Model.Answer( from, targets, guessed, solution ) =>
         Html.div(
-          Html.p( s"Closest towns from ${from.name} (${from.department}):" ),
+          Html.p( s"Closest towns from ${from.name} (${from.department}, pop. ${from.population}):" ),
           Html.ul(
             targets
               .sortBy( _._2 )
               .toList
               .map:
                 case ( t, d ) =>
-                  Html.li( f"${d / 1000}%.2f km ${t.name} (${t.department})" )
+                  val ok: Boolean = solution.code == guessed.code
+
+                  val classes: Classes =
+                    Option.when[Classes]( t.code == solution.code )( b.hasTextWeightBold ).orEmpty |+|
+                      Option
+                        .when[Classes]( t.code == guessed.code )( if ( ok ) b.hasTextSuccess else b.hasTextDanger )
+                        .orEmpty
+                  Html.li( classes )( f"${d / 1000}%.2f km ${t.name} (${t.department}, pop. ${t.population})" )
           )
         )
 

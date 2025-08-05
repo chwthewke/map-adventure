@@ -2,10 +2,12 @@ package net.chwthewke.mapadv
 package spa
 package css
 
+import cats.Monoid
+import cats.derived.strict.*
 import tyrian.Attr
 import tyrian.Html
 
-case class Classes( classes: Vector[CssClass] ):
+case class Classes( classes: Vector[CssClass] ) derives Monoid:
   def +( bc: Classes ): Classes = copy( classes = classes ++ bc.classes )
 
   def attr: Attr[Nothing] =
