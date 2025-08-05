@@ -13,10 +13,12 @@ import org.http4s.dom.FetchClientBuilder
 import scala.collection.immutable.SortedMap
 import tyrian.Cmd
 
+import games.DistanceGame
+
 enum AppModel[F[_]]:
   case Error( message: String )
   case Loading( http: Http[F] )
-  case Loaded( http: Http[F], mapData: MapData )
+  case Loaded( http: Http[F], mapData: MapData, game: Option[DistanceGame.Model] )
 
 object AppModel:
 
@@ -34,14 +36,20 @@ object AppModel:
       )
 
   extension [F[_]]( model: AppModel[F] )
-    def update( msg: Msg ): ( AppModel[F], Cmd[F, Msg] ) =
+    def update( msg: Msg )( using Async[F] ): ( AppModel[F], Cmd[F, Msg] ) =
       model match
         case AppModel.Error( message ) => ( model, Cmd.None )
         case AppModel.Loading( http )  =>
           msg match
             case Msg.Noop                   => ( model, Cmd.None )
-            case Msg.ReceiveMapData( data ) => ( Loaded( http, data ), Cmd.None )
-        case AppModel.Loaded( http, mapData ) => ( model, Cmd.None )
+            case Msg.ReceiveMapData( data ) => ( Loaded( http, data, None ), Cmd.None )
+            case _                          => ( model, Cmd.None )
+        case l @ AppModel.Loaded( http, mapData, game ) =>
+          msg match
+            case Msg.DistanceGameMsg( dgm ) =>
+              val ( dg, cmd ) = DistanceGame.update( mapData, game, dgm )
+              ( l.copy( game = dg ), cmd.map( Msg.DistanceGameMsg( _ ) ) )
+            case _ => ( model, Cmd.None )
 
 class Http[F[_]: Async]( val backend: Uri, private val client: Client[F] ):
   def loadJson[A: Decoder]( name: String )( using Async[F] ): F[A] =
