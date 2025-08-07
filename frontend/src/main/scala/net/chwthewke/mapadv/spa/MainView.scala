@@ -16,12 +16,15 @@ object MainView:
       case AppModel.Loading( http ) =>
         Html.h1( b.title + b.isInfo )( s"Loading data from ${http.backend.renderString}" )
       case AppModel.Loaded( http, mapData, gameOpt ) =>
-        Html.p(
-          Html.text( "Loaded map data" ),
-          Html.br(),
-          Html.text( s"${mapData.townships.size} townships" ),
+        Html.div(
+          Html.p(
+            Html.text( "Loaded map data" ),
+            Html.br(),
+            Html.text( s"${mapData.townships.size} townships" )
+          ),
           Html.button( b.button + b.isPrimary, Html.onClick( Msg.DistanceGameMsg( DistanceGame.Msg.Start ) ) )(
             "New distance game"
           ),
-          gameOpt.map( DistanceGame.view( _ ).map( Msg.DistanceGameMsg( _ ) ) )
+          gameOpt.map( DistanceGame.view( _ ).map( Msg.DistanceGameMsg( _ ) ) ),
+          Html.button( b.button + b.isPrimary, Html.onClick( Msg.SampleMapMsg ) )( "Sample map" )
         )

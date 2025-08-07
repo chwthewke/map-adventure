@@ -14,6 +14,7 @@ import scala.collection.immutable.SortedMap
 import tyrian.Cmd
 
 import games.DistanceGame
+import net.chwthewke.mapadv.spa.maps.Maps
 
 enum AppModel[F[_]]:
   case Error( message: String )
@@ -49,7 +50,8 @@ object AppModel:
             case Msg.DistanceGameMsg( dgm ) =>
               val ( dg, cmd ) = DistanceGame.update( mapData, game, dgm )
               ( l.copy( game = dg ), cmd.map( Msg.DistanceGameMsg( _ ) ) )
-            case _ => ( model, Cmd.None )
+            case Msg.SampleMapMsg => ( model, Maps.sampleMapCmd[F] )
+            case _                => ( model, Cmd.None )
 
 class Http[F[_]: Async]( val backend: Uri, private val client: Client[F] ):
   def loadJson[A: Decoder]( name: String )( using Async[F] ): F[A] =

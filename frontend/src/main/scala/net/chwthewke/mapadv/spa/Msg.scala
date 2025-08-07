@@ -7,3 +7,4 @@ enum Msg:
   case Noop
   case ReceiveMapData( data: MapData )
   case DistanceGameMsg( msg: DistanceGame.Msg )
+  case SampleMapMsg

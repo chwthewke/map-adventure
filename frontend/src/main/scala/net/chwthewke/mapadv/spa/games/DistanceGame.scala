@@ -2,6 +2,7 @@ package net.chwthewke.mapadv
 package spa.games
 
 import cats.Monad
+import cats.data.NonEmptyVector
 import cats.effect.Async
 import cats.effect.std.Console
 import cats.effect.std.Random
@@ -12,6 +13,7 @@ import tyrian.Html
 import net.chwthewke.mapadv.spa.css.Bulma
 import net.chwthewke.mapadv.spa.css.Classes
 import net.chwthewke.mapadv.spa.games.DistanceGame.Model.Question
+import net.chwthewke.mapadv.spa.maps.Maps
 
 object DistanceGame:
   enum Model:
@@ -102,8 +104,9 @@ object DistanceGame:
   def update[F[_]: Async]( data: MapData, game: Option[Model], msg: Msg ): ( Option[Model], Cmd[F, Msg] ) =
     msg match
       case Msg.Start           => ( Some( Model.Init ), Cmd.Run( randomQuestion[F]( data ) ).map( Msg.Ask( _ ) ) )
-      case Msg.Ask( question ) => ( Some( question ), Cmd.None )
-      case Msg.Reply( code )   =>
+      case Msg.Ask( question ) =>
+        ( Some( question ), Maps.mapAtCmd[F]( question.from ) )
+      case Msg.Reply( code ) =>
         game match
           case Some( Model.Question( from, targets ) ) =>
             val targetsWithDistance: Vector[( Township, Double )] =
@@ -118,6 +121,6 @@ object DistanceGame:
                     guessed,
                     actual
                   ),
-              Cmd.None
+              Maps.mapAtAllCmd( NonEmptyVector( from, targets ) )
             )
           case _ => ( game, Cmd.None )
